@@ -1,13 +1,32 @@
 '''
 Created on Sep 17, 2017
+@author: ishank mishra
 
-@author: ishan
-'''
+~ The objective is to place a certain number of queens on N x N grid/board. 
+~ The board also has pawns. Positions of pawns specified in the input.
+~ The pawns are non attacking.
+~ The Pawns prevent queens from attacking each other, if placed in between them.
 
-# 0: Free
-# 1: Queen
-# 2: Tree
-# 3: Under Attack   
+~ The input to this program is as follows:
+
+    First Line:     The algorithm to be used for search. In this program, DFS(Iterative).
+    Second Line:    Height and Width of the grid/board. An integer N indicates N x N grid/board.
+    Third Line:     Number of Queens to be placed. 
+    Next N Lines:   The N x N grid, which can contain the following numbers
+                        0: Free i.e a queen can be placed here
+                        1: Queen
+                        2: Pawn
+                        3: Under Attack- i.e a queen cannot be placed here. Used in intermediate steps only   
+
+~ The output is as defined:
+    
+    First Line:    OK:     If it is possible to place the specified number of Queens
+                   FAIL:   Otherwise
+    
+    Next N Lines:  The placement of Queens on the board. 
+    
+Note:   This implementation uses a 1D array to represent a board of size N x N.
+'''  
 
 from __future__ import print_function
 from time import time
@@ -17,89 +36,97 @@ def printBoard(board, n):
         for j in range(0,n):
             print(board[i * n + j],end=" ")        
         print("")
+        
+# Move vertically, horizontally, and diagonally on the board until an end is reached or a pawn is encountered.
+# Block the board positions that are under attack by setting the value to 3.
+def blockBoard(pos, board, n):            
+    # pos: Position of the queen on the board
+    # n: Represents the size of the board. N x N grid.
 
-def blockBoard(n, board, s):
-            
-#     #Go Left
-    for i in range(0, n % s):
-        if board[n - i - 1] == 0: #or board[n - i - 1] == 3:
-            board[n - i - 1] = 3
-        elif board[n - i - 1] == 2:
+    #Go Left
+    for i in range(0, pos % n):
+        if board[pos - i - 1] == 0:
+            board[pos - i - 1] = 3
+        elif board[pos - i - 1] == 2:
             break
             
-#     #Go Right
-    for i in range(0, (s - 1) - (n % s)):
-        if board[n + i + 1] == 0: #or board[n + i + 1] == 3:
-            board[n + i + 1] = 3
-        elif board[n + i + 1] == 2:
+    #Go Right
+    for i in range(0, (n - 1) - (pos % n)):
+        if board[pos + i + 1] == 0:
+            board[pos + i + 1] = 3
+        elif board[pos + i + 1] == 2:
             break
-#     
-#     #Go up  
-    up = n - s
+     
+    #Go up  
+    up = pos - n
     while up >= 0:
-        if board[up] == 0: #or board[up] == 3:
+        if board[up] == 0:
             board[up] = 3
         elif board[up] == 2:
             break
-        up -= s
-#     
-#     #Go Down
-    dn = n + s
-    while dn < s*s:
-        if board[dn] == 0:# or board[dn] == 3:
+        up -= n
+             
+    #Go Down
+    dn = pos + n
+    while dn < n*n:
+        if board[dn] == 0:
             board[dn] = 3
         elif board[dn] == 2:
             break
-        dn += s
-#     
-#     #Go Diagonal Left Up
-    dg = n
-    while (dg % s) != 0 and dg > s:
-        dg -= (s + 1)
-        if board[dg] == 0 :#or board[dg] == 3:
+        dn += n
+     
+    #Go Diagonally Left Up
+    dg = pos
+    while (dg % n) != 0 and dg > n:
+        dg -= (n + 1)
+        if board[dg] == 0:
             board[dg] = 3
         elif board[dg] == 2:
             break
-#         
-#     
-#     #Go Diagonal Right Down
-    dg = n
-    while (dg % s) != (s - 1) and dg < (s*s - s - 1):
-        dg += (s + 1)
-        if board[dg] == 0 :#or board[dg] == 3:
+              
+    #Go Diagonally Right Down
+    dg = pos
+    while (dg % n) != (n - 1) and dg < (n*n - n - 1):
+        dg += (n + 1)
+        if board[dg] == 0:
             board[dg] = 3
         elif board[dg] == 2:
             break
-#         
-#     #Go Diagonal Right Up
-    dg = n
-    while (dg % s) != (s - 1) and dg > (s - 1):
-        if board[dg - s + 1] == 0 :#or board[dg - s + 1] == 3:
-            board[dg - s + 1] = 3
-        elif board[dg - s + 1] == 2:
+         
+    #Go Diagonally Right Up
+    dg = pos
+    while (dg % n) != (n - 1) and dg > (n - 1):
+        if board[dg - n + 1] == 0:
+            board[dg - n + 1] = 3
+        elif board[dg - n + 1] == 2:
             break
-        dg -= (s - 1)
-#     
-#    #Go Diagonal Left Down
-    dg = n
-    while (dg % s) != 0 and dg < s * (s - 1):        
-        if board[dg + (s - 1)] == 0 :#or board[dg + (s - 1)] == 3:
-            board[dg + (s - 1)] = 3
-        elif board[dg + (s - 1)] == 2:
+        dg -= (n - 1)
+     
+    #Go Diagonally Left Down
+    dg = pos
+    while (dg % n) != 0 and dg < n * (n - 1):        
+        if board[dg + (n - 1)] == 0:
+            board[dg + (n - 1)] = 3
+        elif board[dg + (n - 1)] == 2:
             break
-        dg += (s - 1)
-        
+        dg += (n - 1)
+
+# A node level consists of horizontally contiguous positions that are not under attack (value 0).
+# Heuristic: Number of node levels must be greater than or equal to number of Queens to be placed
 def calNodeLevels(board, s):
     
-    nodeLevels = {}
-    indexes = []
-    level = 0
+    nodeLevels = {}     # key: Level; value: Fist available position with value 0
+    indexes = []        # Set of positions with value 0
+    level = 0           # Indicates the current level
     
     for i in range(s*s):
         
         if board[i]== 2 or (i % s) == 0 or i == (s*s - 1):
+            
+            # If this is the last position on the board
             if i == (s*s - 1) and board[i] == 0:
                 indexes.append(i)
+            
             
             if len(indexes) > 0:                       
                 nodeLevels.update({level:indexes})
@@ -115,6 +142,8 @@ def calNodeLevels(board, s):
     
     return nodeLevels
 
+#  Use Depth First Search to place the queens on the board.
+#  DFS is implemented using Iteration.
 def nQueensDFS(n, board, s):
     
     nodeLevels = calNodeLevels(board, s)
@@ -123,14 +152,12 @@ def nQueensDFS(n, board, s):
     freeSegAllowed = level - n
     
     nodeStack = []
-#     startNodeList = []
     
     for i in range(freeSegAllowed + 1):
         for j in nodeLevels[i]:
             nodeStack.append([j])
     
     nodeStack.reverse()
-#     print(nodeStack)
     
     while nodeStack != []:
         
@@ -162,9 +189,7 @@ def nQueensDFS(n, board, s):
             return True
         elif nextPos == -1:
             continue
-        
-#         printBoard(tempBoard, s)
-#         print("")
+   
         childNodes = []
         passFreeSeg = freeSegAllowed
         while True:
