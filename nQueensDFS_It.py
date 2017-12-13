@@ -111,7 +111,7 @@ def blockBoard(pos, board, n):
             break
         dg += (n - 1)
 
-# A node level consists of horizontally contiguous positions that are not under attack (value 0).
+# A node level consists of horizontally contiguous positions where a queen can be placed.
 # Heuristic: Number of node levels must be greater than or equal to number of Queens to be placed
 def calNodeLevels(board, s):
     
@@ -144,122 +144,160 @@ def calNodeLevels(board, s):
 
 #  Use Depth First Search to place the queens on the board.
 #  DFS is implemented using Iteration.
-def nQueensDFS(n, board, s):
+def nQueensDFS(q, board, n, finalBoard):
+    # q: Number of queens to be placed
+    # board: Intermediate N x N grid with 0 or more queens already placed. 
+    # n: Represents the size of the board. N x N grid.
+    # finalBoard: Used to store the board positions once a solution is found.
     
-    nodeLevels = calNodeLevels(board, s)
+    # nodeLevel: Contains level:indexes, available free locations (with value 0) at each level
+    nodeLevels = calNodeLevels(board, n)
+    # Number of levels (horizontally contiguous positions where a queen can be placed)
     level = len(nodeLevels)
     
-    freeSegAllowed = level - n
+    #Heuristic: Number of queens to be placed cannot be greater than number of levels
+    if q > level: 
+        return False
     
+    # Heuristic: Number of free segments i.e. segments without queen placements, should be at least 0.
+    freeSegAllowed = level - q
+    
+    # nodeStack: Stack of possible locations where the queens can be placed
     nodeStack = []
     
+    # Add to nodeStack all the locations where the first queen can be placed at the current iteration
     for i in range(freeSegAllowed + 1):
         for j in nodeLevels[i]:
             nodeStack.append([j])
     
+    # Start from first location in the nodeStack: This step is not really necessary. 
+    # Performs better in certain test cases.
     nodeStack.reverse()
     
+    # If nodeStack is empty then no location is available to place the first queen
     while nodeStack != []:
         
+        # Holds the current stack of queen placements
         curNodes = nodeStack.pop()
+        # Create a temporary board for backtracking
         tempBoard = list(board)
         
+        # Place the queens in the current stack and block the board
         for i in curNodes:
             tempBoard[i] = 1
-            blockBoard(i, tempBoard, s)
+            blockBoard(i, tempBoard, n)
         
-        if n == 1:
+        # Solution Found: The last queen was placed since nodeStack is not empty
+        if q == 1:
             for i in range(len(finalBoard)):                
                 if tempBoard[i] != 3:
                     finalBoard[i] = tempBoard[i] 
             return True
         
-        nextPos = -1
-        
-        for i in range(curNodes[-1], s*s):
+        # Position where the next queen can be placed
+        nextPos = -1        
+        for i in range(curNodes[-1], n*n):
             if tempBoard[i] == 0:
                 nextPos = i
                 break
         
-        if nextPos != -1 and len(curNodes) == (n-1):
+        # Solution Found
+        if nextPos != -1 and len(curNodes) == (q-1):
             for i in range(len(finalBoard)):                
                 if tempBoard[i] != 3:
                     finalBoard[i] = tempBoard[i] 
             finalBoard[nextPos] = 1
             return True
         elif nextPos == -1:
+            # No location is available to place the next queen, therefore backtrack
             continue
-   
+        
+        # Possible candidate nodes that can be appended to the nodeStack
         childNodes = []
+        # Copy of freeSegAllowed used for backtracking         
         passFreeSeg = freeSegAllowed
+        
         while True:
-                          
+            
+            # A queen can be placed here
             if tempBoard[nextPos] == 0:
                 childNodes.append(nextPos)
               
             nextPos += 1
-                             
-            if nextPos > (s*s - 1):                
+            
+            # Next available location is not available
+            if nextPos > (n*n - 1):                
                 break                      
             
-            if (nextPos % s) == 0 and tempBoard[nextPos] != 2 and tempBoard[nextPos - 1] != 2:
-                if passFreeSeg == 0:
-                    break
+            # Reached the end of a segment by encountering a boundary of the board
+            if (nextPos % n) == 0 and tempBoard[nextPos] != 2 and tempBoard[nextPos - 1] != 2:
+                
+                if passFreeSeg == 0:    # If it was must to place a queen in this segment
+                    break               # Solution not possible in the current stack
                 else:
                     passFreeSeg -= 1  
             
+            # Reached the end of a segment by encountering a pawn
+            # If the previous position had a pawn then do nothing (end of segment was already handled)
             if tempBoard[nextPos] == 2 and tempBoard[nextPos - 1] != 2:
-                if passFreeSeg == 0:
-                    break
+                if passFreeSeg == 0:    # If it was must to place a queen in this segment
+                    break               # Solution not possible in the current stack
                 else:
-                    passFreeSeg -= 1
+                    passFreeSeg -= 1     
         
         lenChNodes = len(childNodes)
+        
+        # Update the nodeStack with current stack (now contains a child node)
         for k in range(lenChNodes):
             newNodes = list(curNodes)
             newNodes.append(childNodes[lenChNodes - k - 1])
             nodeStack.append(newNodes)
-
-#         print(nextPos)
-                    
+    
+    # If this point is reached no solution is possible at all            
     return False  
 
-board = []
-finalBoard = board
-
-ipFile = open("input.txt")
-# opFile = open("output.txt","w")
-
-algoType = ipFile.readline()
-boardSize = int(ipFile.readline())
-lizards = int(ipFile.readline())
-
-for i in range(boardSize):
-        
-    line = ipFile.readline()
-    arrLine = list(line.rstrip())
+def main():
+    board = [] # Stores the starting board position
+    finalBoard = board # Used to store the final result, if found later.
     
-    for j in range(boardSize):
-        board.append(int(arrLine[j]))
-
-
-t0 = time()
-
-result = nQueensDFS(lizards, board,boardSize)
-print(result)
-
-t1 = time()
-
-# if result == True:
-#     opFile.write("OK\n")
-#     for i in range(0,boardSize):
-#         for j in range(0,boardSize):
-#             opFile.write(str(finalBoard[i * boardSize + j]))        
-#         opFile.write("\n")
-# else:
-#     opFile.write("FAIL")
-ipFile.close()
-# opFile.close()
-
-printBoard(finalBoard, boardSize)
-print(t1 - t0)
+    ipFile = open("input.txt")
+    opFile = open("output.txt","w")
+    
+    _algoType = ipFile.readline() # Runs DFS irrespective of which algorithm is specified in the input
+    boardSize = int(ipFile.readline())
+    numQueens = int(ipFile.readline())
+    
+    # Read the input file to obtain the starting board position
+    for i in range(boardSize):
+            
+        line = ipFile.readline()
+        arrLine = list(line.rstrip())
+        
+        for j in range(boardSize):
+            board.append(int(arrLine[j]))
+    
+    
+    t0 = time()
+    
+    result = nQueensDFS(numQueens, board, boardSize, finalBoard)
+    print(result)
+    
+    t1 = time()
+    
+    # Handling the final result
+    if result == True:
+        opFile.write("OK\n")
+        for i in range(0,boardSize):
+            for j in range(0,boardSize):
+                opFile.write(str(finalBoard[i * boardSize + j]))        
+            opFile.write("\n")
+    else:
+        opFile.write("FAIL")
+    ipFile.close()
+    opFile.close()
+    
+    printBoard(finalBoard, boardSize)
+    print(t1 - t0)
+    
+if __name__ == '__main__':
+    main()
