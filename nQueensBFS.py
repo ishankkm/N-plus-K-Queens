@@ -148,23 +148,23 @@ def calNodeLevels(board, s):
     
     return nodeLevels
 
-def nQueensBFS(n, board, s, finalBoard):
+def nQueensBFS(q, board, n, finalBoard):
     # q: Number of queens to be placed
     # board: Intermediate N x N grid with 0 or more queens already placed. 
     # n: Represents the size of the board. N x N grid.
     # finalBoard: Used to store the board positions once a solution is found.
     
     # nodeLevel: Contains level:indexes, available free locations (with value 0) at each level    
-    nodeLevels = calNodeLevels(board, s)
+    nodeLevels = calNodeLevels(board, n)
     # Number of levels (horizontally contiguous positions where a queen can be placed)
     level = len(nodeLevels)
     
     #Heuristic: Number of queens to be placed cannot be greater than number of levels
-    if n > level: 
+    if q > level: 
         return False
     
     # Heuristic: Number of free segments i.e. segments without queen placements, should be at least 0.
-    freeSegAllowed = level - n
+    freeSegAllowed = level - q
     
     # startNode points to the front of the queue. Initialized with a dummy value.
     startNode = ListNode("0")
@@ -197,11 +197,11 @@ def nQueensBFS(n, board, s, finalBoard):
         # Block the board with current queen positions
         for i in nodeIndexList:
             tempBoard[i] = 1
-            blockBoard(i, tempBoard, s)
+            blockBoard(i, tempBoard, n)
         
         
         # if only one queen has to be placed, then the solution is found
-        if n == 1:
+        if q == 1:
             for i in range(len(finalBoard)):                
                 if tempBoard[i] != 3:
                     finalBoard[i] = tempBoard[i] 
@@ -222,7 +222,7 @@ def nQueensBFS(n, board, s, finalBoard):
                         tempBoard[i] = 1
                     
                         # Solution Found
-                        if lenNodeIndexList == (n - 1):                                           
+                        if lenNodeIndexList == (q - 1):                                           
                             for j in range(len(tempBoard)):
                                 if tempBoard[j] != 3:
                                     finalBoard[j] = tempBoard[j] 
@@ -253,7 +253,7 @@ def main():
     
     _algoType = ipFile.readline() # Runs BFS irrespective of which algorithm is specified in the input
     boardSize = int(ipFile.readline())
-    lizards = int(ipFile.readline())
+    numQueens = int(ipFile.readline())
     
     # Read the input file to obtain the starting board position
     for i in range(boardSize):
@@ -266,7 +266,7 @@ def main():
     
     t0 = time()
     
-    result = nQueensBFS(lizards, board, boardSize, finalBoard)
+    result = nQueensBFS(numQueens, board, boardSize, finalBoard)
    
     t1 = time()
     
