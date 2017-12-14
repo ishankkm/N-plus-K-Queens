@@ -165,7 +165,7 @@ def nQueensDFS(q, board, n, finalBoard):
     # nodeStack: Stack of possible locations where the queens can be placed
     nodeStack = []
     
-    # Add to nodeStack all the locations where the first queen can be placed at the current iteration
+    # Add to nodeStack all the locations where the first queen can be placed
     for i in range(freeSegAllowed + 1):
         for j in nodeLevels[i]:
             nodeStack.append([j])
@@ -187,7 +187,7 @@ def nQueensDFS(q, board, n, finalBoard):
             tempBoard[i] = 1
             blockBoard(i, tempBoard, n)
         
-        # Solution Found: The last queen was placed since nodeStack is not empty
+        # if only one queen has to be placed, then the solution is found
         if q == 1:
             for i in range(len(finalBoard)):                
                 if tempBoard[i] != 3:
