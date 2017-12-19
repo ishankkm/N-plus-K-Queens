@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+	<title></title>
+    <link rel="stylesheet" href="./css/style.css" type="text/css" media="all">
+    <script src="./script/script.js" defer></script>	
+    <script src="./script/controls.js" defer></script>	
+</head>
+
+<body>
+	<main class = "main">
+		<div id="controls" class = "container-1">
+			<div class = "row-1">
+				<div class = "col-1">
+					<span><label>Board Size</label></span>
+					<span><label>Number of Queens</label></span> 
+					<span><label>Number of Pawns</label></span>
+					<span><label>Show Intermediate Steps</label></span>
+					<span><label>Simulation Speed</label></span>				
+				</div>
+				<div class = "col-2">
+					<span>
+						<select id = "bszsel" onchange="changeBoardSize()">
+						  <option value="4">4</option>
+						  <option value="5">5</option>
+						  <option value="6">6</option>
+						  <option value="7">7</option>
+						  <option value="8" selected>8</option>
+						  <option value="9">9</option>
+						  <option value="10">10</option>
+						</select>
+					</span>
+					<span>
+						<input type="number" id="numQueen" name="numQ" min="1" max="15" value="8"> 
+					</span>
+					<span>				
+						<input type="number" id="numPawns" name="numP" min="0" max="10" value="2"> 
+					</span>
+					<span>
+						<input type="checkbox" id="showstep" name="showintstep" checked>
+					</span>
+					<span>				
+						<input type="range" id="simSpeed" name="simSpeed" min="50" max="550" step="50" value="550">
+					</span>				
+				</div>
+			</div>
+			<div class = "row-2">
+				<span>
+					<button id="butStartSim" class="button">Start Simulation</button>
+					<button id="butStopSim" class="button">Stop Simulation</button>	
+					<button id="reset" class="button">Reset</button>
+				</span>	
+			</div>			
+			<div>*Check out a cool variant of this problem <a href="./Liz/index.html">here</a> </div>
+		</div>
+		<div class = "container-2">
+			<div id = "gridbody"></div>	
+		</div>
+		<div id = "stats" class = "container-3">
+			<span id = "curtemp"><h3>Current Temperature: </h3></span>
+			<span id = "curtempval"></span>
+			<span id = "curener"><h3>Current Energy: </h3></span>
+			<span id = "curenerval"></span>
+		</div>	
+	</main>
+</body>
+</html>
