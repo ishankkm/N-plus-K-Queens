@@ -1,4 +1,4 @@
-# N-plus-K-Queens
+# [N-plus-K-Queens](https://n-plus-k-queens.herokuapp.com/)
 
 The problem is similar to the N-Queens problem, with an added complexity of having pawns on the board. 
 As before, each pair of queens in the same row, column, or diagonal can attack each other.
@@ -16,3 +16,4 @@ These were also used for temperature tuning in Simulated Annealing method.
 
 The repository also includes sample test cases.
 
+### H3 Check out a demo app for simulated annealing [here](https://n-plus-k-queens.herokuapp.com/)
