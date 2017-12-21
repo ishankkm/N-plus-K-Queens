@@ -16,4 +16,4 @@ These were also used for temperature tuning in Simulated Annealing method.
 
 The repository also includes sample test cases.
 
-### H3 Check out a demo app for simulated annealing [here](https://n-plus-k-queens.herokuapp.com/)
+### Check out a demo app for simulated annealing [here](https://n-plus-k-queens.herokuapp.com/)
